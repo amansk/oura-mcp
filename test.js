@@ -40,16 +40,16 @@ async function main() {
   );
 
   try {
-    console.log('Connecting to server...');
+    console.error('Connecting to server...');
     await client.connect(transport);
 
-    console.log('Listing resources...');
+    console.error('Listing resources...');
     const resources = await client.listResources();
-    console.log('Available resources:', resources);
+    console.error('Available resources:', resources);
 
-    console.log('\nListing tools...');
+    console.error('\nListing tools...');
     const tools = await client.listTools();
-    console.log('Available tools:', tools);
+    console.error('Available tools:', tools);
 
     // Test various resources
     const resourceTests = [
@@ -60,15 +60,15 @@ async function main() {
     ];
 
     for (const resource of resourceTests) {
-      console.log(`\nFetching ${resource}...`);
+      console.error(`\nFetching ${resource}...`);
       const data = await client.readResource({
         uri: `oura://${resource}`
       });
-      console.log(`${resource} data:`, data);
+      console.error(`${resource} data:`, data);
     }
 
     // Call the specified tool with the given date
-    console.log(`\nCalling ${toolName}...`);
+    console.error(`\nCalling ${toolName}...`);
     const data = await client.callTool({
       name: toolName,
       arguments: {
@@ -76,7 +76,7 @@ async function main() {
         endDate: date,
       },
     });
-    console.log(`${toolName} data:`, data);
+    console.error(`${toolName} data:`, data);
 
   } catch (error) {
     console.error('Error:', error);

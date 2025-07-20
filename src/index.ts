@@ -4,6 +4,50 @@ import { OuraProvider } from './provider/oura_provider.js';
 
 dotenvConfig();
 
+// Prevent debug modules from outputting to stdout
+process.env.DEBUG = '';
+process.env.NODE_DEBUG = '';
+
+// Filter stdout to prevent any accidental debug output
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+process.stdout.write = function(chunk: any, encoding?: any, callback?: any) {
+  // Only allow JSON-RPC messages to go through stdout
+  const str = chunk.toString();
+  
+  // Check if this is a JSON-RPC message (starts with { and contains jsonrpc)
+  if (str.trim().startsWith('{') && str.includes('"jsonrpc"')) {
+    return originalStdoutWrite(chunk, encoding, callback);
+  }
+  
+  // Filter out any debug messages or large data dumps
+  if (str.includes('Fetching') || str.includes('Response') || str.includes('more items') || str.includes('2024-')) {
+    // Redirect to stderr instead
+    return process.stderr.write(chunk, encoding, callback);
+  }
+  
+  // For other non-JSON-RPC messages, redirect to stderr
+  return process.stderr.write(chunk, encoding, callback);
+};
+
+// Redirect console methods to stderr
+console.log = console.error;
+console.info = console.error;
+console.warn = console.error;
+console.debug = console.error;
+
+// Handle uncaught exceptions and unhandled promise rejections
+process.on('uncaughtException', (error) => {
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+  process.stderr.write(`Uncaught exception: ${errorMessage}\n`);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  const errorMessage = reason instanceof Error ? reason.message : 'Unknown error';
+  process.stderr.write(`Unhandled promise rejection: ${errorMessage}\n`);
+  process.exit(1);
+});
+
 const config = {
   api: {
     baseUrl: 'https://api.ouraring.com/v2',
@@ -46,6 +90,8 @@ async function main() {
 }
 
 main().catch(error => {
-  console.error('Server error:', error);
+  // Use stderr and sanitize error to prevent large data logging
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+  process.stderr.write(`Server error: ${errorMessage}\n`);
   process.exit(1);
 });

@@ -34,26 +34,29 @@ export class OuraProvider {
     const url = new URL(`${this.auth.getBaseUrl()}/usercollection/${endpoint}`);
     
     if (params) {
-      // Log the incoming date parameters
-      console.log(`Fetching ${endpoint} with dates:`, params);
-      
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.append(key, value);
       });
     }
 
-    const response = await fetch(url.toString(), { headers });
+    try {
+      const response = await fetch(url.toString(), { headers });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${endpoint}: ${response.statusText}`);
-    }
+      if (!response.ok) {
+        // Don't include response body in error to prevent large data logging
+        throw new Error(`Failed to fetch ${endpoint}: ${response.status} ${response.statusText}`);
+      }
 
-    const data = await response.json();
-    // Log the response data dates
-    if (data.data && data.data.length > 0) {
-      console.log(`Response data for ${endpoint}:`, data.data.map((d: { day?: string; timestamp?: string }) => d.day || d.timestamp));
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      // Sanitize error message to prevent large data from being logged
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch ${endpoint}: ${error.message}`);
+      } else {
+        throw new Error(`Failed to fetch ${endpoint}: Unknown error`);
+      }
     }
-    return data;
   }
 
   private initializeResources(): void {
