@@ -7,27 +7,9 @@ dotenvConfig();
 // Prevent debug modules from outputting to stdout
 process.env.DEBUG = '';
 process.env.NODE_DEBUG = '';
+process.env.NODE_ENV = 'production';
 
-// Filter stdout to prevent any accidental debug output
-const originalStdoutWrite = process.stdout.write.bind(process.stdout);
-process.stdout.write = function(chunk: any, encoding?: any, callback?: any) {
-  // Only allow JSON-RPC messages to go through stdout
-  const str = chunk.toString();
-  
-  // Check if this is a JSON-RPC message (starts with { and contains jsonrpc)
-  if (str.trim().startsWith('{') && str.includes('"jsonrpc"')) {
-    return originalStdoutWrite(chunk, encoding, callback);
-  }
-  
-  // Filter out any debug messages or large data dumps
-  if (str.includes('Fetching') || str.includes('Response') || str.includes('more items') || str.includes('2024-')) {
-    // Redirect to stderr instead
-    return process.stderr.write(chunk, encoding, callback);
-  }
-  
-  // For other non-JSON-RPC messages, redirect to stderr
-  return process.stderr.write(chunk, encoding, callback);
-};
+// Don't override stdout - let MCP SDK handle the protocol directly
 
 // Redirect console methods to stderr
 console.log = console.error;
@@ -85,7 +67,6 @@ async function main() {
   });
   
   const transport = new StdioServerTransport();
-  
   await provider.getServer().connect(transport);
 }
 
