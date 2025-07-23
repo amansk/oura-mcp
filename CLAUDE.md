@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Additional Context
+Please also read and follow the instructions in:
+- `../claude-context/CLAUDE.md` - General development best practices and task management guidelines
+- `../claude-context/PRD_PROMPT.md` - Product requirements development methodology
+
 ## Project Overview
 
 This is an Oura MCP Server - a Model Context Protocol server that provides access to Oura Ring health and fitness data. It bridges Oura's API with MCP clients like Claude Desktop.
@@ -51,14 +56,14 @@ node test.js <tool_name> <date>
 - **Resource URI Scheme**: All resources use `oura://` prefix (e.g., `oura://daily_sleep`)
 - **Date-based Tools**: Tools like `get_daily_sleep` accept `startDate` and `endDate` parameters in YYYY-MM-DD format
 
-### Available Resources (15 total)
+### Available Resources (17 total)
 
 Non-date-based:
 - `personal_info`, `ring_configuration`
 
 Date-based (default 7-day window):
 - Daily metrics: `daily_activity`, `daily_readiness`, `daily_sleep`, `daily_stress`, `daily_resilience`, `daily_spo2`, `daily_cardiovascular_age`
-- Detailed data: `sleep`, `sleep_time`, `workout`, `session`, `rest_mode_period`, `vO2_max`
+- Detailed data: `sleep`, `sleep_time`, `workout`, `session`, `rest_mode_period`, `vO2_max`, `heartrate`, `enhanced_tag`
 
 ## Testing Approach
 

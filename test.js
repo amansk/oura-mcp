@@ -8,10 +8,10 @@ const __dirname = dirname(__filename);
 
 async function main() {
   // Get command line arguments
-  const [toolName, date] = process.argv.slice(2);
+  const [toolName, startDate, endDate] = process.argv.slice(2);
   
-  if (!toolName || !date) {
-    console.error('Usage: node test.js <tool_name> <date>');
+  if (!toolName || !startDate) {
+    console.error('Usage: node test.js <tool_name> <start_date> [end_date]');
     process.exit(1);
   }
 
@@ -72,8 +72,8 @@ async function main() {
     const data = await client.callTool({
       name: toolName,
       arguments: {
-        startDate: date,
-        endDate: date,
+        startDate: startDate,
+        endDate: endDate || startDate,
       },
     });
     console.error(`${toolName} data:`, data);

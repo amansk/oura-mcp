@@ -142,6 +142,16 @@ export class OuraProvider {
         name: 'vO2_max', 
         requiresDates: true,
         description: 'Get estimated VO2 max (maximal oxygen uptake) values indicating cardiovascular fitness level based on heart rate during activities.'
+      },
+      { 
+        name: 'heartrate', 
+        requiresDates: true,
+        description: 'Get individual heart rate measurements throughout the day including daytime and workout heart rate. Returns BPM values with timestamps and measurement source.'
+      },
+      { 
+        name: 'enhanced_tag', 
+        requiresDates: true,
+        description: 'Get multi-day tags with optional comments for annotating events, symptoms, or behaviors. Includes tag type, start/end times, and custom notes.'
       }
     ];
 
